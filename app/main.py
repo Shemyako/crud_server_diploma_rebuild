@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 
 import db
-from .router.create import create_router
+from .router.post import post_router
 
 
 # Мб эту функцию потом под авторизацию подогнать
@@ -29,12 +29,4 @@ async def shutdown():
     await db.database.disconnect()
 
 
-# @app.post("/")
-# async def realease(type_of_lesson: pydantic_models.TypesOfLesson):
-#     print("Boba")
-#     return type_of_lesson
-
-
-
-
-app.include_router(create_router)
+app.include_router(post_router)
