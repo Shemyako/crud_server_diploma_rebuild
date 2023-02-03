@@ -2,9 +2,7 @@
 For start project:
 
 proj:
-
 uvicorn run:app
 
 dev:
-
 uvicorn run:app --reload
