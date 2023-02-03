@@ -1,173 +1,181 @@
+"""
+Models were rewrited to SQLAlchemy Core from ORM, so it could work with async
+"""
+
+
 from sqlalchemy import Table, Integer, String, Boolean, \
-    Column, DateTime, Date, ForeignKey, Float, BigInteger
+    Column, DateTime, Date, ForeignKey, Float, BigInteger, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
+metadata = MetaData()
+
+
 Base = declarative_base()
 
-class TypesOfLesson(Base):
-    '''
-    Table for types of lessons. For ex., group lesson or personal lesson
+typesOfLesson = Table('types_of_lesson', metadata,
+    # '''
+    # Table for types of lessons. For ex., group lesson or personal lesson
 
-    id
-    name - name of lesson
-    client_price - amount, that client must pay for that type of lesson
-    staff_payment - amount, that staff will have for this type of lesson
-    is_actual
-    '''
-    __tablename__ = 'types_of_lesson'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(100), nullable=False)
-    client_price = Column(Float)
-    staff_payment = Column(Float)
-    is_actual = Column(Boolean, nullable=False)
-
-
-class Dogs(Base):
-    '''
-    Dogs info
-
-    staff_id - instructor's id
-    place_id - default place for lesson. It helps to autofill field lessons.place_id
-    '''
-    __tablename__ = 'dogs'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(20), nullable=False)
-    breed = Column(String(20), nullable=False)
-    is_learning = Column(Boolean, nullable=False)    
-    staff_id = Column(Integer, ForeignKey('staff.id'))
-    place_id = Column(Integer, ForeignKey('places.id'))
-
-
-class UserDog(Base):
-    '''
-    Many to many table. One dog may have many owners and vice versa
-    '''
-    __tablename__ = 'user_dog'
-    id = Column(Integer, primary_key=True)
-    staff_id = Column(Integer, ForeignKey('staff.id'))
-    dog_id = Column(Integer, ForeignKey('dogs.id'))
+    # id
+    # name - name of lesson
+    # client_price - amount, that client must pay for that type of lesson
+    # staff_payment - amount, that staff will have for this type of lesson
+    # is_actual
+    # '''
     
-
-class Lessons(Base):
-    '''
-    Table for lessons. Connects staff, dog, place, type of lesson
-    '''
-    __tablename__ = 'lessons'
-    id = Column(Integer, primary_key=True)
-    date = Column(DateTime(), nullable=False)   
-    dog_id = Column(Integer, ForeignKey('dogs.id'), nullable=False)
-    place_id = Column(Integer, ForeignKey('places.id'), nullable=False)
-    type_of_lesson_id = Column(Integer, ForeignKey('types_of_lesson.id'), nullable=False)
-    staff_id = Column(Integer, ForeignKey('staff.id'), nullable=False)
+    Column("id", Integer(), primary_key=True),
+    Column("name", String(100), nullable=False),
+    Column("client_price", Float),
+    Column("staff_payment", Float),
+    Column("is_actual", Boolean, nullable=False)
+)
 
 
-class Staff(Base):
-    '''
-    Information about all users (customers and staff)
+dogs = Table('dogs', metadata,
+    # '''
+    # Dogs info
+
+    # staff_id - instructor's id
+    # place_id - default place for lesson. It helps to autofill field lessons.place_id
+    # '''
+    Column("id", Integer(), primary_key=True),
+    Column("name", String(20), nullable=False),
+    Column("breed",String(20), nullable=False),
+    Column("is_learning", Boolean(), nullable=False)    ,
+    Column("staff_id", Integer(), ForeignKey('staff.id')),
+    Column("place_id", Integer(), ForeignKey('places.id'))
+)
+
+
+userDog = Table('user_dog', metadata,
+    # '''
+    # Many to many table. One dog may have many owners and vice versa
+    # '''
+    Column("id", Integer, primary_key=True),
+    Column("staff_id", Integer, ForeignKey('staff.id')),
+    Column("dog_id", Integer, ForeignKey('dogs.id'))
+)
+   
+
+lessons = Table('lessons', metadata,
+    # '''
+    # Table for lessons. Connects staff, dog, place, type of lesson
+    # '''
+    Column("id", Integer, primary_key=True),
+    Column("date", DateTime(), nullable=False),   
+    Column("dog_id", Integer, ForeignKey('dogs.id'), nullable=False),
+    Column("place_id", Integer, ForeignKey('places.id'), nullable=False),
+    Column("type_of_lesson_id", Integer, ForeignKey('types_of_lesson.id'), nullable=False),
+    Column("staff_id", Integer, ForeignKey('staff.id'), nullable=False)
+)
+
+
+staff = Table('staff', metadata,
+    # '''
+    # Information about all users (customers and staff)
     
-    id
-    name - person's name
-    role - (-1)-3 (customer without adv/ customer with adv/ instuctor/ administrator/ sen. administrator)
-    ...
-    '''
-    __tablename__ = 'staff'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(20), nullable=False)
-    role = Column(Integer, nullable=False)
-    phone = Column(String(15), nullable=False)
-    date_of_birth = Column(Date())
-    tg_id = Column(Integer)
-    e_mail = Column(String(100))
+    # id
+    # name - person's name
+    # role - (-1)-3 (customer without adv/ customer with adv/ instuctor/ administrator/ sen. administrator)
+    # ...
+    # '''
+    Column("id", Integer, primary_key=True),
+    Column("name", String(20), nullable=False),
+    Column("role", Integer, nullable=False),
+    Column("phone", String(15), nullable=False),
+    Column("date_of_birth", Date()),
+    Column("tg_id", Integer),
+    Column("e_mail", String(100))
+)
+
+places = Table('places', metadata,
+    # '''
+    # Information about places, where lessons run
+    # '''
+    Column("id", Integer, primary_key=True),
+    Column("address", String(255), nullable=False),
+    Column("name", String(30), nullable=False),
+    Column("is_actual", Boolean, nullable=False)    
+)
 
 
-class Places(Base):
-    '''
-    Information about places, where lessons run
-    '''
-    __tablename__ = 'places'
-    id = Column(Integer, primary_key=True)
-    address = Column(String(255), nullable=False)
-    name = Column(String(30), nullable=False)
-    is_actual = Column(Boolean, nullable=False)    
+advertisements = Table('advertisements', metadata,
+    # '''
+    # Table for advertisements. Advertisements will be sended by tg or e-mail
+
+    # id
+    # name - name of adv (information for staff)
+    # created_by - staff, that created this adv
+    # date_to_post
+    # topic - for e-mail
+    # text
+    # send_to - 1/2/3 (tg/e-mail/both)
+    # '''
+    Column("id", Integer, primary_key=True),
+    Column("name", String(20), nullable=False),
+    Column("created_by", Integer, ForeignKey('staff.id'), nullable=False),
+    Column("date_to_post", DateTime(), default=datetime.now, nullable=False),
+    Column("topic", String(100), nullable=False),
+    Column("text", String(255), nullable=False),
+    Column("send_to", String(2), nullable=False) 
+)
 
 
-class Advertisements(Base):
-    '''
-    Table for advertisements. Advertisements will be sended by tg or e-mail
-
-    id
-    name - name of adv (information for staff)
-    created_by - staff, that created this adv
-    date_to_post
-    topic - for e-mail
-    text
-    send_to - 1/2/3 (tg/e-mail/both)
-    '''
-    __tablename__ = 'advertisements'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(20), nullable=False)
-    created_by = Column(Integer, ForeignKey('staff.id'), nullable=False)
-    date_to_post = Column(DateTime(), default=datetime.now, nullable=False)
-    topic = Column(String(100), nullable=False)
-    text = Column(String(255), nullable=False)
-    send_to = Column(String(2), nullable=False) 
-    
-
-class Users(Base):
-    '''
-    StaffAuth more correct name for this table. Kepps passwords for staff
-    '''
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    password = Column(String(100), nullable=False)
-    staff_id = Column(Integer, ForeignKey('staff.id'), nullable=False)
-    
-
-class Courses(Base):
-    '''
-    Information about courses, that customers may buy
-
-    id
-    name - name of course
-    lesson_amount - amount of lessons, that customer may attend
-    price
-    is_actual
-    '''
-    __tablename__ = 'courses'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(100), nullable=False)
-    lesson_amount = Column(Integer, nullable=False)
-    price = Column(Float, nullable=False)
-    is_actual = Column(Boolean, nullable=False) 
+users = Table('users', metadata,
+    # '''
+    # StaffAuth more correct name for this table. Kepps passwords for staff
+    # '''
+    Column("id", Integer, primary_key=True),
+    Column("password", String(100), nullable=False),
+    Column("staff_id", Integer, ForeignKey('staff.id'), nullable=False)
+)
 
 
-class DogCourse(Base):
-    '''
-    Many to many table. For one dog may be bought many courses and vice versa
-    '''
-    __tablename__ = 'dog_course'
-    id = Column(Integer, primary_key=True)
-    dog_id = Column(Integer, ForeignKey('dogs.id'), nullable=False)
-    course_id = Column(Integer, ForeignKey('courses.id'), nullable=False)
-    date = Column(Date(), nullable=False)
+courses = Table('courses', metadata,
+    # '''
+    # Information about courses, that customers may buy
+
+    # id
+    # name - name of course
+    # lesson_amount - amount of lessons, that customer may attend
+    # price
+    # is_actual
+    # '''
+    Column("id", Integer, primary_key=True),
+    Column("name", String(100), nullable=False),
+    Column("lesson_amount", Integer, nullable=False),
+    Column("price", Float, nullable=False),
+    Column("is_actual", Boolean, nullable=False) 
+)
 
 
-class Sessions(Base):
-    '''
-    Table to keep sessions
+dogCourse = Table('dog_course', metadata,
+    # '''
+    # Many to many table. For one dog may be bought many courses and vice versa
+    # '''
+    Column("id", Integer, primary_key=True),
+    Column("dog_id", Integer, ForeignKey('dogs.id'), nullable=False),
+    Column("course_id", Integer, ForeignKey('courses.id'), nullable=False),
+    Column("date", Date(), nullable=False)
+)
 
-    id
-    user_id
-    token
-    time - unix time
-    ip
-    mac
-    '''
-    __tablename__ = 'sessions'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    token = Column(String(40), nullable=True)
-    time = Column(BigInteger, nullable=False)
-    ip = Column(String(40), nullable=False)
-    mac = Column(String(20), nullable=False)   
+
+sessions = Table('sessions', metadata,
+    # '''
+    # Table to keep sessions
+
+    # id
+    # user_id
+    # token
+    # time - unix time
+    # ip
+    # mac
+    # '''
+    Column("id", Integer, primary_key=True),
+    Column("user_id", Integer, ForeignKey('users.id')),
+    Column("token", String(40), nullable=True),
+    Column("time", BigInteger, nullable=False),
+    Column("ip", String(40), nullable=False),
+    Column("mac", String(20), nullable=False)
+)
