@@ -12,6 +12,7 @@ class TypesOfLesson(BaseModel):
     staff_payment - amount, that staff will have for this type of lesson
     is_actual
     '''
+    id : int = None
     name : constr(max_length=100)
     client_price : float = None
     staff_payment : float = None
@@ -25,6 +26,7 @@ class Dogs(BaseModel):
     staff_id - instructor's id
     place_id - default place for lesson. It helps to autofill field lessons.place_id
     '''
+    id : int = None
     name : constr(max_length=20)
     breed : constr(max_length=20)
     is_learning : bool   
@@ -36,6 +38,7 @@ class UserDog(BaseModel):
     '''
     Many to many table. One dog may have many owners and vice versa
     '''
+    id : int = None
     staff_id : int = None
     dog_id : int = None
     
@@ -44,6 +47,7 @@ class Lessons(BaseModel):
     '''
     Table for lessons. Connects staff, dog, place, type of lesson
     '''
+    id : int = None
     date : datetime  
     dog_id : int
     place_id : int
@@ -60,6 +64,7 @@ class Staff(BaseModel):
     role - (-1)-3 (customer without adv/ customer with adv/ instuctor/ administrator/ sen. administrator)
     ...
     '''
+    id : int = None
     name : constr(max_length=20)
     role : int
     phone : constr(max_length=15)
@@ -72,6 +77,7 @@ class Places(BaseModel):
     '''
     Information about places, where lessons run
     '''
+    id : int = None
     address : constr(max_length=255)
     name : constr(max_length=30)
     is_actual : bool   
@@ -89,6 +95,7 @@ class Advertisements(BaseModel):
     text
     send_to - 1/2/3 (tg/e-mail/both)
     '''
+    id : int = None
     name : constr(max_length=20)
     created_by : int
     date_to_post : datetime = datetime.now()
@@ -101,6 +108,7 @@ class Users(BaseModel):
     '''
     StaffAuth more correct name for this table. Kepps passwords for staff
     '''
+    id : int = None
     password : constr(max_length=100)
     staff_id : int
     
@@ -115,6 +123,7 @@ class Courses(BaseModel):
     price
     is_actual
     '''
+    id : int = None
     name : constr(max_length=100)
     lesson_amount : int
     price : float
@@ -125,6 +134,7 @@ class DogCourse(BaseModel):
     '''
     Many to many table. For one dog may be bought many courses and vice versa
     '''
+    id : int = None
     dog_id : int
     course_id : int
     date : date
