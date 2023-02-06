@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 
 import db
 from .router.post import post_router
+from .router.get import get_router
 
 
 # Мб эту функцию потом под авторизацию подогнать
@@ -30,3 +31,4 @@ async def shutdown():
 
 
 app.include_router(post_router)
+app.include_router(get_router)
