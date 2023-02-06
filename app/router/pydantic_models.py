@@ -137,4 +137,23 @@ class DogCourse(BaseModel):
     id : int = None
     dog_id : int
     course_id : int
-    date : date
+    date : date   
+
+
+class Sessions(BaseModel):
+    '''
+    Table to keep sessions
+
+    id
+    user_id
+    token
+    time - unix time
+    ip
+    mac
+    # '''
+    id : int = None
+    user_id : int
+    token : constr(max_length=40) = None
+    time : int = None
+    ip : constr(max_length=40) = None
+    mac : constr(max_length=20)
