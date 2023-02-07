@@ -21,9 +21,12 @@ post_router = APIRouter()
 
 @post_router.post("/type_of_lesson/")
 async def create_type_of_lesson(type_of_lesson: pydantic_models.TypesOfLesson):
+    # type_of_lesson.dict() - values to insert
     type_of_lesson = type_of_lesson.dict()
+    # del id, so SQLAlchemy won't scold
     del type_of_lesson['id']
 
+    # insert into talbe
     query = insert(db.typesOfLesson)
     result = await db.database.execute(query, type_of_lesson)
     return result
@@ -64,9 +67,7 @@ async def create_staff(staff: pydantic_models.Staff):
     staff = staff.dict()
     del staff['id']
 
-    # insert into talbe
     query = insert(db.staff)
-    # staff.dict() - values to insert
     result = await db.database.execute(query, staff)
     return result
 
