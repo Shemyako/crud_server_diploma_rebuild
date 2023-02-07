@@ -58,25 +58,22 @@ async def get_place(id:int = None):
     return await db.database.fetch_all(query)
 
 
-### !
 @get_router.get("/user/{user_id}/dogs")
-async def get_dogs_of_user(user_id:int = None):
-    query = db.places.select().where(db.places.c.id == id) if id \
-        else db.places.select()
+async def get_dogs_of_user(user_id:int):
+    query = db.dogs.select().join(db.userDog).where(db.userDog.c.staff_id == user_id)
+
     return await db.database.fetch_all(query)
 
 
-### !
 @get_router.get("/dog/{dog_id}/users")
-async def get_dog_owners(dog_id:int = None):
-    query = db.places.select().where(db.places.c.id == id) if id \
-        else db.places.select()
+async def get_dog_owners(dog_id:int):
+    query = db.staff.select().join(db.userDog).where(db.userDog.c.dog_id == dog_id)
+
     return await db.database.fetch_all(query)
 
 
-### !
 @get_router.get("/dog/{dog_id}/courses")
-async def get_dog_courses(dog_id:int = None):
-    query = db.places.select().where(db.places.c.id == id) if id \
-        else db.places.select()
+async def get_dog_courses(dog_id:int):
+    query = db.courses.select().join(db.dogCourse).where(db.dogCourse.c.dog_id == dog_id)
+
     return await db.database.fetch_all(query)
