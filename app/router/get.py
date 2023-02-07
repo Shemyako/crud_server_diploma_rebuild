@@ -10,7 +10,7 @@ get_router = APIRouter()
 
 @get_router.get("/staff/")
 async def get_staff(id:int = None):
-    # print(id)
+    # select from table. if id doesn't exit, we'll search for all rows
     query = db.staff.select().where(db.staff.c.id == id) if id \
         else db.staff.select()
     return await db.database.fetch_all(query)
